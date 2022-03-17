@@ -1,0 +1,71 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+//Тут формируется задача сборки "cmake (Release)". Она нужна для последующего использования в задаче "build Rerease"
+//This is where the "cmake (Release)" task is generated. It is needed for further use in the "build Rerease" task
+            "label": "cmake (Release)",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceRoot}/build"
+            },
+            "command": "cmake",
+            "args": [
+                "-G",
+                "'NMake Makefiles'",
+                "-DCMAKE_BUILD_TYPE=Release",
+                "${workspaceRoot}"
+            ],
+            "problemMatcher": ["$gcc"]
+        },
+//Тут формируется задача сборки "cmake (Debug)". Она нужна для последующего использования в задаче "build Debug"
+//This is where the "cmake (Debug)" task is generated. It is needed for later use in the "build Debug" task
+        {
+            "label": "cmake (Debug)",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceRoot}/debug"
+            },
+            "command": "cmake",
+            "args": [
+                "-G",
+                "'NMake Makefiles'",
+                "-DCMAKE_BUILD_TYPE=Debug",
+                "${workspaceRoot}"
+            ],
+            "problemMatcher": ["$gcc"]
+        },
+// Тут формируется задача сборки "build Debug" с зависимостью ("dependsOn":) от сформированной ранее задачи "cmake (Debug)",
+// This forms the "build Debug" build task with a dependency ("dependsOn":) on the previously formed "cmake (Debug)" task
+        {
+            "label": "build Debug",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceRoot}/debug"
+            },
+            "command": "nmake",
+            "dependsOn": "cmake (Debug)",
+            "problemMatcher": ["$gcc"],
+            //Строки ниже обозначают, что данная задача будет использоватья по-умолчанию
+            //The lines below indicate that this task will be used by default
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+// Тут формируется задача сборки "build Rerease" с зависимостью ("dependsOn":) от сформированной ранее задачи "cmake (Release)",
+// This forms the "build Rerease" build task with a dependency ("dependsOn":) on the previously formed "cmake (Release)" task
+        {
+            "label": "build Rerease",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceRoot}/build"
+            },
+            "command": "nmake",
+            "dependsOn": "cmake (Release)",
+            "problemMatcher": ["$gcc"]
+        }       
+    ]
+}
